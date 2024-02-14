@@ -1,12 +1,14 @@
 package com.example.papajohns;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.papajohns.adapters.CategoryAppAdapter;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    static final int PRODUCT_REQUEST_CODE=1;
     ListView listView;
     List<CategoryApp> list;
     CategoryAppAdapter categoryAppAdapter;
@@ -31,8 +34,16 @@ public class MainActivity extends AppCompatActivity {
         list.add(new CategoryApp(3, "Restaurant", R.drawable.rest1));
         categoryAppAdapter = new CategoryAppAdapter(this, list, R.layout.category_item);
         listView.setAdapter(categoryAppAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CategoryApp categoryApp = new CategoryApp();
+                categoryApp = (CategoryApp) listView.getItemAtPosition(position);
+                ProductsActivity(view, position, categoryApp.getId());
+            }
+        });
     }
-
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -53,5 +64,13 @@ public class MainActivity extends AppCompatActivity {
 //            return true;
 //        }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public void ProductsActivity(View view, int position, int productId) {
+        Intent intent = new Intent(this, ProductsActivity.class);
+        intent.putExtra("position", position);
+        intent.putExtra("id", productId);
+        startActivityForResult(intent,PRODUCT_REQUEST_CODE);
     }
 }

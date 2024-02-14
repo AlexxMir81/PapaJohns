@@ -2,5 +2,13 @@
     <string name="app_name">PapaJohns</string>
     <string name="on_click">Click me!</string>
     <string name="action_cart">Корзина</string>
-
+    <string name="title_activity_product">ProductActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="item1">Small, 23cm</string>
+    <string name="item2">Medium, 30cm</string>
+    <string name="item3">Large, 35cm</string>
 </resources>
