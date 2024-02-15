@@ -8,10 +8,11 @@ public class Order {
     private int orderId;
     private int status;
     private int typeChoice;
+    private int image;
     public Order() {
     }
 
-    public Order(String name, int count, int cost, int orderId, int status, int typeChoice) {
+    public Order(String name, int count, int cost, int orderId, int status, int typeChoice, int image) {
 
         this.name = name;
         this.count = count;
@@ -19,8 +20,9 @@ public class Order {
         this.orderId = orderId;
         this.status = status;
         this.typeChoice = typeChoice;
+        this.image = image;
     }
-    public Order(int id, String name, int count, int cost, int orderId, int status, int typeChoice) {
+    public Order(int id, String name, int count, int cost, int orderId, int status, int typeChoice, int image) {
         this.id = id;
         this.name = name;
         this.count = count;
@@ -28,6 +30,7 @@ public class Order {
         this.orderId = orderId;
         this.status = status;
         this.typeChoice = typeChoice;
+        this.image = image;
     }
 
     public int getId() {
@@ -86,6 +89,14 @@ public class Order {
         this.typeChoice = typeChoice;
     }
 
+    public int getImage() {
+        return image;
+    }
+
+    public void setImage(int image) {
+        this.image = image;
+    }
+
     @Override
     public String toString() {
         return "Orders{" +
@@ -96,6 +107,7 @@ public class Order {
                 ", orderId=" + orderId +
                 ", status=" + status +
                 ", typeChoice=" + typeChoice +
+                ", image=" + image +
                 '}';
     }
 }

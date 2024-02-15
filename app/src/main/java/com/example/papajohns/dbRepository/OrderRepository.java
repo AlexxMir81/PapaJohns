@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderRepository extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "myDb1";
     private static final String TABLE_ORDERS= "Orders";
     private static final String COLUMN_ID = "id";
@@ -25,6 +25,7 @@ public class OrderRepository extends SQLiteOpenHelper {
     private static final String COLUMN_ORDER_ID = "orderId";
     private static final String COLUMN_STATUS = "status";
     private static final String COLUMN_TYPE_CHOICE = "typeChoice";
+    private static final String COLUMN_IMAGE = "image";
 
     public boolean addOrder(Order order){
         try {
@@ -36,6 +37,7 @@ public class OrderRepository extends SQLiteOpenHelper {
             values.put(COLUMN_ORDER_ID, order.getOrderId());
             values.put(COLUMN_STATUS, order.getStatus());
             values.put(COLUMN_TYPE_CHOICE, order.getTypeChoice());
+            values.put(COLUMN_IMAGE, order.getImage());
             sqLiteDatabase.insert(TABLE_ORDERS, null, values);
             sqLiteDatabase.close();
             return true;
@@ -56,6 +58,7 @@ public class OrderRepository extends SQLiteOpenHelper {
             values.put(COLUMN_ORDER_ID, order.getOrderId());
             values.put(COLUMN_STATUS, order.getStatus());
             values.put(COLUMN_TYPE_CHOICE, order.getTypeChoice());
+            values.put(COLUMN_IMAGE, order.getImage());
             int result = sqLiteDatabase.update(TABLE_ORDERS, values, COLUMN_ID + " = ? ",
                     new String[]{String.valueOf(order.getId())});
             sqLiteDatabase.close();
@@ -82,14 +85,14 @@ public class OrderRepository extends SQLiteOpenHelper {
         try{
             SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
             Cursor cursor = sqLiteDatabase.query(TABLE_ORDERS, new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_COUNT,
-                            COLUMN_COST, COLUMN_ORDER_ID, COLUMN_STATUS, COLUMN_TYPE_CHOICE}, COLUMN_ID + " = ?", new String[]{String.valueOf(id)},
+                            COLUMN_COST, COLUMN_ORDER_ID, COLUMN_STATUS, COLUMN_TYPE_CHOICE, COLUMN_IMAGE}, COLUMN_ID + " = ?", new String[]{String.valueOf(id)},
                     null, null, null, null);
             if (cursor!=null){
                 cursor.moveToFirst();
             }
 
             Order product = new Order(cursor.getInt(0), cursor.getString(1), cursor.getInt(2),
-                    cursor.getInt(3), cursor.getInt(4), cursor.getInt(5), cursor.getInt(6));
+                    cursor.getInt(3), cursor.getInt(4), cursor.getInt(5), cursor.getInt(6) , cursor.getInt(7));
             sqLiteDatabase.close();
             return product;
         }catch (Exception ex){
@@ -102,13 +105,14 @@ public class OrderRepository extends SQLiteOpenHelper {
         try{
             SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
             Cursor cursor = sqLiteDatabase.query(TABLE_ORDERS, new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_COUNT,
-                            COLUMN_COST, COLUMN_ORDER_ID, COLUMN_STATUS, COLUMN_TYPE_CHOICE}, COLUMN_ORDER_ID + " = ?", new String[]{String.valueOf(OrderId)},
+                            COLUMN_COST, COLUMN_ORDER_ID, COLUMN_STATUS, COLUMN_TYPE_CHOICE, COLUMN_IMAGE}, COLUMN_ORDER_ID + " = ?", new String[]{String.valueOf(OrderId)},
                     null, null, null, null);
             if (cursor!=null){
                 cursor.moveToFirst();
                 do {
                     Order product = new Order(cursor.getInt(0), cursor.getString(1), cursor.getInt(2),
-                            cursor.getInt(3), cursor.getInt(4), cursor.getInt(5), cursor.getInt(6));
+                            cursor.getInt(3), cursor.getInt(4), cursor.getInt(5),
+                            cursor.getInt(6), cursor.getInt(7));
                     list.add(product);
                 }while (cursor.moveToNext());
             }
@@ -129,14 +133,15 @@ public class OrderRepository extends SQLiteOpenHelper {
                 cursor.moveToFirst();
                 do {
                     Order order = new Order(cursor.getInt(0), cursor.getString(1), cursor.getInt(2),
-                            cursor.getInt(3), cursor.getInt(4), cursor.getInt(5), cursor.getInt(6));
+                            cursor.getInt(3), cursor.getInt(4), cursor.getInt(5),
+                            cursor.getInt(6), cursor.getInt(7));
                     list.add(order);
                 }while (cursor.moveToNext());
             }
             sqLiteDatabase.close();
         }catch (Exception ex){
             ex.printStackTrace();
-            Log.i("ProductSQL", "cursor null" + ex.getMessage());
+            Log.i("ProductSQL", "cursor null " + ex.getMessage());
         }
         return list;
     }
@@ -182,7 +187,8 @@ public class OrderRepository extends SQLiteOpenHelper {
                 TABLE_ORDERS + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," +
                 COLUMN_NAME + " TEXT NOT NULL , " + COLUMN_COUNT + " INTEGER NOT NULL , " +
                 COLUMN_COST + " INTEGER NOT NULL , " + COLUMN_ORDER_ID + " INTEGER NOT NULL , "
-                + COLUMN_STATUS + " INTEGER NOT NULL , " + COLUMN_TYPE_CHOICE + " INTEGER NOT NULL)";
+                + COLUMN_STATUS + " INTEGER NOT NULL , " + COLUMN_TYPE_CHOICE + " INTEGER NOT NULL, "
+                + COLUMN_IMAGE + " INTEGER NOT NULL)";
         db.execSQL(CREATE_ORDERS_SCRIPT);
 
     }

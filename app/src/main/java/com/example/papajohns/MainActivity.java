@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_cart) {
-            // Действие при нажатии на кнопку
+            OrdersActivity();
             return true;
         }
 //        if (id == R.id.action_edit) {
@@ -72,5 +72,10 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("position", position);
         intent.putExtra("id", productId);
         startActivityForResult(intent,PRODUCT_REQUEST_CODE);
+    }
+    public void OrdersActivity() {
+
+        Intent intent = new Intent(this, OrderActivity.class);
+        startActivityForResult(intent,4);
     }
 }

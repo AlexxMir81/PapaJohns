@@ -1,8 +1,11 @@
 package com.example.papajohns;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -20,6 +24,7 @@ public class ProductItemActivity extends AppCompatActivity {
     private int currentValue = 1;
     private Spinner spinner;
     int sum;
+    int costPerOne;
     int id;
     TextView name;
     TextView composition;
@@ -41,14 +46,16 @@ public class ProductItemActivity extends AppCompatActivity {
         Intent intent = getIntent();
         name.setText(intent.getStringExtra("name"));
         composition.setText(intent.getStringExtra("composition"));
-        sum = intent.getIntExtra("cost",0);
+
+        costPerOne = intent.getIntExtra("cost", 0);
+        sum = intent.getIntExtra("cost", 0);
         cost.setText(String.valueOf(sum));
         image.setImageResource(intent.getIntExtra("image", 0));
+        image.setTag(intent.getIntExtra("image", 0));
         Log.i("ProductSQL", "after create ProductItemActivity");
 
         spinner = findViewById(R.id.type_select);
-
-        String[] items = new String[] {
+        String[] items = new String[]{
                 getString(R.string.item1),
                 getString(R.string.item2),
                 getString(R.string.item3)
@@ -64,9 +71,10 @@ public class ProductItemActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 currentValue++;
-                sum*=2;
+                sum += costPerOne;
                 count.setText(String.valueOf(currentValue));
-                cost.setText(String.valueOf(sum));;
+                cost.setText(String.valueOf(sum));
+                ;
             }
         });
 
@@ -75,9 +83,10 @@ public class ProductItemActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (currentValue > 0) {
                     currentValue--;
-                    sum/=2;
+                    sum -= costPerOne;
                     count.setText(String.valueOf(currentValue));
-                    cost.setText(String.valueOf(sum));;
+                    cost.setText(String.valueOf(sum));
+                    ;
                 }
             }
         });
@@ -86,9 +95,30 @@ public class ProductItemActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BackMainActivity(v);
+                new AlertDialog.Builder(ProductItemActivity.this)
+                        .setMessage("Are you sure?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                BackMainActivity(v);
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
             }
         });
+
+        if (intent.getIntExtra("category", 0)==3) {
+            LinearLayout layout1 = findViewById(R.id.count_layout);
+            layout1.setVisibility(View.GONE);
+            LinearLayout layout2 = findViewById(R.id.buttoms_layout);
+            layout2.setVisibility(View.GONE);
+            spinner.setVisibility(View.GONE);
+            cost.setVisibility(View.GONE);
+        }
     }
 
     public boolean makeOrder(){
@@ -102,13 +132,12 @@ public class ProductItemActivity extends AppCompatActivity {
                 orderId = orderRepository.getMaxOrder()+1;
                 Log.i("ProductSQL", "getMaxOrder "+ orderId);
             }
+
             Order order = new Order(name.getText().toString(), Integer.parseInt(count.getText().toString()),
-                    Integer.parseInt(cost.getText().toString()),
-                    orderId, 0,
-                    spinner.getSelectedItemPosition());
-            Log.i("ProductSQL", "Order "+ order.toString());
+                    costPerOne, orderId, 0,spinner.getSelectedItemPosition(), (Integer) image.getTag());
+            Log.i("ProductSQL", "Order "+ order.toString()+" imageID "+R.drawable.pizza1+" "+image.getTag());
             boolean test =  orderRepository.addOrder(order);
-            Log.i("ProductSQL", "after create Order "+  orderRepository.getAll().size());
+            Log.i("ProductSQL", "after create Order "+ orderRepository.getAll().size());
 
             return true;
         }catch (Exception ex){
