@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -26,8 +27,7 @@ public class OrderAdapter extends BaseAdapter {
     private int teplatelayout;
     private LayoutInflater inflater;
     private int currentCount = 0;
-    int tempSum = 0;
-    int sumPerOne = 0;
+    int totalSum;
     private Activity activity;
     public OrderAdapter(Context context, List<Order> data, int teplatelayout) {
         this.context = context;
@@ -68,8 +68,7 @@ public class OrderAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        Log.i("ProductSQL", "before make spinner");
-//        Spinner spinner = activity.findViewById(R.id.type_select);
+
         String[] items = new String[] {
                 activity.getString(R.string.item1),
                 activity.getString(R.string.item2),
@@ -78,29 +77,26 @@ public class OrderAdapter extends BaseAdapter {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item, items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         holder.spinner.setAdapter(adapter);
-        //Log.i("ProductSQL", "make spinner");
         TextView name = convertView.findViewById(R.id.name_text);
-        //TextView type = convertView.findViewById((R.id.type_text));
         EditText count = convertView.findViewById(R.id.count_text);
         TextView sum = convertView.findViewById(R.id.sum_text);
         ImageView image = convertView.findViewById(R.id.img_view);
+        TextView totalAmount = (TextView) activity.findViewById(R.id.total_amount);
+        totalSum = 0;
+        for (Order order: data){
+            totalSum+=(order.getCost()*order.getCount());
+        }
+        totalAmount.setText(activity.getString(R.string.total_amount)+" "+ totalSum);
 
         Order order = data.get(position);
+
         name.setText(order.getName());
         holder.spinner.setSelection(order.getTypeChoice());
 
-        //type.setText(String.valueOf(order.getTypeChoice()));
         count.setText(String.valueOf(order.getCount()));
         sum.setText(String.valueOf(order.getCount()*order.getCost()));
-        if (sumPerOne ==0 && currentCount==0 && tempSum==0){
-            sumPerOne = order.getCost();
-            currentCount = order.getCount();
-            tempSum = sumPerOne*currentCount;
-        }
-
 
         image.setImageResource(order.getImage());
-        Log.i("ProductSQL", "get image "+order.getImage());
         OrderRepository orderRepository = new OrderRepository(context);
         convertView.setTag(holder);
         holder.recycleButton.setOnClickListener(new View.OnClickListener() {
@@ -114,22 +110,26 @@ public class OrderAdapter extends BaseAdapter {
         holder.plusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                currentCount = Integer.parseInt(count.getText().toString());
                 currentCount++;
-                Log.i("ProductSQL", "прибавление currentcount "+currentCount);
-                tempSum += sumPerOne;
+                sum.setText(String.valueOf(order.getCost()*currentCount));
                 count.setText(String.valueOf(currentCount));
-                sum.setText(String.valueOf(tempSum));
+                order.setCount(Integer.parseInt(count.getText().toString()));
+
+                updateOrder(order);
             }
         });
         holder.minusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                currentCount = Integer.parseInt(count.getText().toString());
                 if (currentCount > 0) {
                     currentCount--;
-                    Log.i("ProductSQL", "убавление currentcount "+currentCount);
-                    tempSum -= sumPerOne;
+                    sum.setText(String.valueOf(order.getCost()*currentCount));
                     count.setText(String.valueOf(currentCount));
-                    sum.setText(String.valueOf(tempSum));
+                    order.setCount(Integer.parseInt(count.getText().toString()));
+                    totalAmount.setText("asfgsdfgsdfgsdfg");
+                    updateOrder(order);
                 }
             }
         });
@@ -138,6 +138,11 @@ public class OrderAdapter extends BaseAdapter {
         holder.plusButton.setTag(position);
         holder.minusButton.setTag(position);
         return convertView;
+    }
+
+    public void updateOrder(Order order){
+        OrderRepository orderRepository = new OrderRepository(context);
+        orderRepository.updateOrder(order);
     }
     private static class ViewHolder {
         Button recycleButton;

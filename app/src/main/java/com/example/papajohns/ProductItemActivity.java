@@ -37,6 +37,8 @@ public class ProductItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_item);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         Log.i("ProductSQL", "create ProductItemActivity");
         orderRepository = new OrderRepository(this);
         name = findViewById(R.id.name_text);
@@ -120,9 +122,18 @@ public class ProductItemActivity extends AppCompatActivity {
             cost.setVisibility(View.GONE);
         }
     }
-
+    @Override
+    public boolean onSupportNavigateUp() {
+        BackMainActivity();
+        return true;
+    }
+    public void BackMainActivity() {
+        Intent intent = new Intent();
+        // intent.putExtra("count",count);
+        setResult(RESULT_CANCELED,intent);
+        finish();
+    }
     public boolean makeOrder(){
-        //OrderRepository orderRepository= new OrderRepository(ProductItemActivity.this);
         int orderId = -1;
         try {
             if (orderRepository.getCurrentOrder()!=-1){

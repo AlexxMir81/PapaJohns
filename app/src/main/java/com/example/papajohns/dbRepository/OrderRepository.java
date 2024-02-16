@@ -81,6 +81,16 @@ public class OrderRepository extends SQLiteOpenHelper {
         }
     }
 
+    public void deleteAll(){
+        try{
+            SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+            sqLiteDatabase.delete(TABLE_ORDERS, null, null);
+            sqLiteDatabase.close();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
     public Order getById(int id){
         try{
             SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();

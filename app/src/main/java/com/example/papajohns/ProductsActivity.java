@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -28,7 +31,9 @@ public class ProductsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product);
-        Log.i("ProductSQL", "before createRepository");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         productRepository = new ProductRepository(this);
         if(productRepository.getAll()!=null && productRepository.getAll().size()<=1) {
             productRepository.addProduct(new Product("Пицца грибная", 300, "Грибы, курица, сыр", R.drawable.pizza1,1));
@@ -46,7 +51,12 @@ public class ProductsActivity extends AppCompatActivity {
         categoryId = intent.getIntExtra("id", 0);
         position = intent.getIntExtra("position", 0);
         list = productRepository.getByCategoryId(categoryId);
-        Log.i("ProductSQL", "after getByCategoryId() " + list.size());
+        switch (categoryId){
+            case (1): getSupportActionBar().setTitle(getString(R.string.category1));break;
+            case (2): getSupportActionBar().setTitle(getString(R.string.category2));break;
+            case (3): getSupportActionBar().setTitle(getString(R.string.category3));break;
+            default: getSupportActionBar().setTitle("PapaJanes");
+        }
         productCategoryAdapter = new ProductCategoryAdapter(this, list, R.layout.category_item);
         listView.setAdapter(productCategoryAdapter);
 
@@ -55,16 +65,44 @@ public class ProductsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Product product = new Product();
                 product = (Product) listView.getItemAtPosition(position);
-                Log.i("ProductSQL", "befor ProductItemActivity");
                 ProductItemActivity(view, position, product);
             }
         });
+
     }
-    public void BackMainActivity(View view) {
+    @Override
+    public boolean onSupportNavigateUp() {
+        BackMainActivity();
+        return true;
+    }
+    public void BackMainActivity() {
         Intent intent = new Intent();
         // intent.putExtra("count",count);
         setResult(RESULT_CANCELED,intent);
         finish();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        SubMenu subMenuFile = menu.addSubMenu("О Компании");
+        subMenuFile.add(Menu.NONE,3,Menu.NONE,"Контакты");
+        subMenuFile.add(Menu.NONE,4,Menu.NONE,"Справка");
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_cart) {
+            OrdersActivity();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    public void OrdersActivity() {
+
+        Intent intent = new Intent(this, OrderActivity.class);
+        startActivityForResult(intent,4);
     }
     public void ProductItemActivity(View view, int position, Product product) {
         Intent intent = new Intent(this, ProductItemActivity.class);

@@ -59,10 +59,6 @@ public class MainActivity extends AppCompatActivity {
             OrdersActivity();
             return true;
         }
-//        if (id == R.id.action_edit) {
-//            // Действие при нажатии на кнопку
-//            return true;
-//        }
         return super.onOptionsItemSelected(item);
     }
 

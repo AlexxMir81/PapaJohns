@@ -12,4 +12,7 @@
     <string name="item1">Small, 23cm</string>
     <string name="item2">Medium, 30cm</string>
     <string name="item3">Large, 35cm</string>
+    <string name="category1">Pizzas</string>
+    <string name="category2">Sushi`s</string>
+    <string name="category3">Restaurants</string>
 </resources>
